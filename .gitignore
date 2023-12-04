@@ -1,0 +1,30 @@
+# .gitignore for a Python project
+
+# Python bytecode
+__pycache__/
+
+# Virtual environment
+venv/
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# IDE files and directories
+.vscode/
+.idea/
+
+# Environment-specific files
+.env
+
+# Distribution folders
+dist/
+build/
+*.egg-info/
+
+# Miscellaneous
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
