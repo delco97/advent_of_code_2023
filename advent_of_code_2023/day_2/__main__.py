@@ -21,6 +21,18 @@ class Game:
             for extraction in self.extractions
         ])
 
+    def get_max_num_red(self) -> int:
+        return max([extraction.num_red for extraction in self.extractions])
+
+    def get_max_num_green(self) -> int:
+        return max([extraction.num_green for extraction in self.extractions])
+
+    def get_max_num_blue(self) -> int:
+        return max([extraction.num_blue for extraction in self.extractions])
+
+    def get_power(self) -> int:
+        return self.get_max_num_red() * self.get_max_num_green() * self.get_max_num_blue()
+
 
 def get_game_id(raw_game: str) -> int:
     raw_game = raw_game.strip()
@@ -60,10 +72,17 @@ def deserialize_games(raw_data: IO) -> list[Game]:
     ]
 
 
-def result(games: list[Game]) -> int:
+def result_1(games: list[Game]) -> int:
     return sum([game.id for game in games if game.is_possible(12, 13, 14)])
+
+
+def result_2(games: list[Game]) -> int:
+    return sum([game.get_power() for game in games])
 
 
 if __name__ == '__main__':
     with open("input.txt", "r") as f:
-        print(f"first star solution: {result(deserialize_games(f))}")
+        print(f"first star solution: {result_1(deserialize_games(f))}")
+
+    with open("input.txt", "r") as f:
+        print(f"second star solution: {result_2(deserialize_games(f))}")
