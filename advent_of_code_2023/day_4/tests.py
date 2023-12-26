@@ -14,6 +14,7 @@ def test_example_part_1():
     """
     assert solve_1(StringIO(input)) == 13
 
+
 def test_example_part_2():
     input: str = """
     Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
