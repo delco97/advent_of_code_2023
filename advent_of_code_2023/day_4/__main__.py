@@ -1,5 +1,18 @@
 import re
 from typing import IO
+from dataclasses import dataclass
+
+
+@dataclass
+class Card:
+    number: int
+    winning_numbers: set[int]
+    given_numbers: set[int]
+    instances: int
+
+    def get_points(self) -> int:
+        matches = len(self.winning_numbers & self.given_numbers)
+        return 2 ** (matches - 1) if matches > 0 else 0
 
 
 def iterate_raw_rows(input: IO) -> list[str]:
@@ -8,30 +21,30 @@ def iterate_raw_rows(input: IO) -> list[str]:
             yield row.strip()
 
 
-def extract_numbers(current_row: str) -> tuple[set[int], set[int]]:
-    colon_position = current_row.find(":")
-    if colon_position == -1:
-        raise ValueError("Invalid input. Expected a colon.")
-    current_row = current_row[colon_position + 1:].strip()
-    splitted_row = [x.strip() for x in current_row.split("|")]
-    if len(splitted_row) != 2:
-        raise ValueError("Invalid input. Expected exactly one pipe.")
-    winning_numbers: set[int] = {int(x) for x in re.split(r'\s+', splitted_row[0])}
-    given_numbers: set[int] = {int(x) for x in re.split(r'\s+', splitted_row[1])}
-    return winning_numbers, given_numbers
-
-
 def get_card_points(winning_numbers: set[int], given_numbers: set[int]) -> int:
     matches = len(winning_numbers & given_numbers)
     return 2 ** (matches - 1) if matches > 0 else 0
 
 
+def parse_card(raw: str) -> Card:
+    colon_position = raw.find(":")
+    if colon_position == -1:
+        raise ValueError("Invalid input. Expected a colon.")
+    card_number = int(raw[:colon_position].strip().split(" ")[1])
+    raw_numbers = raw[colon_position + 1:].strip()
+    splitted_row = [x.strip() for x in raw_numbers.split("|")]
+    if len(splitted_row) != 2:
+        raise ValueError("Invalid input. Expected exactly one pipe.")
+    winning_numbers: set[int] = {int(x) for x in re.split(r'\s+', splitted_row[0])}
+    given_numbers: set[int] = {int(x) for x in re.split(r'\s+', splitted_row[1])}
+    return Card(card_number, winning_numbers, given_numbers, 1)
+
+
 def solve_1(input: IO) -> int:
-    points = 0
-    for current_row in iterate_raw_rows(input):
-        winning_numbers, given_numbers = extract_numbers(current_row)
-        points += get_card_points(winning_numbers, given_numbers)
-    return points
+    cards_pile: list[Card] = [
+        parse_card(current_row) for current_row in iterate_raw_rows(input)
+    ]
+    return sum([card.get_points() for card in cards_pile])
 
 
 def solve_2(input: IO) -> int:
