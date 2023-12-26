@@ -1,7 +1,7 @@
 from io import StringIO
 
 from advent_of_code_2023.day_3.__main__ import solve_1, get_symbols, get_numbers, get_dots, \
-    MatchedPart
+    MatchedPart, solve_2
 
 
 def test_get_symbols():
@@ -36,7 +36,7 @@ def test_get_dots():
     ]
 
 
-def test_solve_1():
+def test_example_part_1():
     input: str = """
     467..114..
     ...*......
@@ -50,3 +50,18 @@ def test_solve_1():
     .664.598..
     """
     assert solve_1(StringIO(input)) == 4361
+
+def test_example_part_2():
+    input: str = """
+    467..114..
+    ...*......
+    ..35..633.
+    ......#...
+    617*......
+    .....+.58.
+    ..592.....
+    ......755.
+    ...$.*....
+    .664.598..
+    """
+    assert solve_2(StringIO(input)) == 467835

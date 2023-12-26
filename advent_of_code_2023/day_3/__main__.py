@@ -17,6 +17,22 @@ class PartNumber:
     start: int
     end: int
 
+@dataclass(frozen=True)
+class Gear:
+    row: int
+    start: int
+    end: int
+    part_numbers: frozenset[PartNumber]
+
+    def __post_init__(self):
+        if not hasattr(self, 'part_numbers') or len(self.part_numbers) != 2:
+            raise ValueError("part_numbers must have exactly two elements")
+
+    def get_ratio(self) -> float:
+        mul = 1
+        for part_number in self.part_numbers:
+            mul *= part_number.value
+        return mul
 
 @dataclass(frozen=True)
 class Row:
@@ -30,6 +46,9 @@ def get_start_end_positions_of_matches(row: str, pattern: str) -> list[MatchedPa
 
 def get_symbols(row: str) -> list[MatchedPart]:
     return get_start_end_positions_of_matches(row, r"[^\d\.]")
+
+def get_asterisks(row: str) -> list[MatchedPart]:
+    return get_start_end_positions_of_matches(row, r"\*")
 
 
 def get_numbers(row: str) -> list[MatchedPart]:
@@ -86,6 +105,32 @@ def solve_1(input: IO) -> int:
     return part_numbers_sum
 
 
+def solve_2(input: IO) -> int:
+    raw_rows = [row.strip() for row in input.readlines() if row.strip() != ""]
+    rows = [Row(row_index, row.strip()) for row_index, row in enumerate(raw_rows)]
+    gears: set[Gear] = set()
+    for current_row in rows:
+        next_row = rows[current_row.index + 1] if current_row.index + 1 < len(rows) else None
+        previous_row = rows[current_row.index - 1] if current_row.index - 1 >= 0 else None
+        for asterisk in get_asterisks(current_row.value):
+            nearby_part_numbers = get_nearby_part_numbers(asterisk.start, current_row, previous_row, next_row)
+            if len(nearby_part_numbers) == 2:
+                gears.add(
+                    Gear(
+                        current_row.index,
+                        asterisk.start,
+                        asterisk.end,
+                        frozenset(nearby_part_numbers)
+                    )
+                )
+    gear_ratios_sum = sum([gear.get_ratio() for gear in gears])
+    return gear_ratios_sum
+
 if __name__ == "__main__":
+
     with open("input.txt") as f:
-        print(solve_1(f))
+        print(f"Solution 1: {solve_1(f)}")
+
+    with open("input.txt") as f:
+        print(f"Solution 2: {solve_2(f)}")
+
