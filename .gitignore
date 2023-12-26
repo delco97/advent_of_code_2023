@@ -29,3 +29,4 @@ build/
 *.pyd
 .DS_Store
 /advent_of_code_2023/day_3/.pytest_cache/
+/.mypy_cache/
